@@ -10,4 +10,4 @@ async function obterPessoas(nome) {
 
 module.exports={
     obterPessoas
-}
+} 
