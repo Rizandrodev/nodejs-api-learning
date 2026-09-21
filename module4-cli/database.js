@@ -1,28 +1,45 @@
-const {readFile} =require('fs')
+const { readFile, writeFile } = require('fs')
 
-const {promisify} =require('util')
+const { promisify } = require('util')
 
-const readFileAsync=promisify(readFile)
+const readFileAsync = promisify(readFile)
+const WriteFileAsync = promisify(writeFile)
 /*
  Outra Forma de Obter dados Json
  const dadosJson=require('./herois.json')
 */
-class Database{
-  constructor(){
-    this.Nome_ARQUIVO='herois.json'
+class Database {
+  constructor() {
+    this.NOME_ARQUIVO = 'herois.json'
   }
-  async obterDadosArquivo(){
-    const arquivo= await readFileAsync(this.Nome_ARQUIVO,'utf-8')
-    return JSON.parse(arquivo,toString())
+  async obterDadosArquivo() {
+    const arquivo = await readFileAsync(this.NOME_ARQUIVO, 'utf-8')
+    return JSON.parse(arquivo, toString())
   }
-  escreverArquivos(){
+  async escreverArquivos(dados) {
+  await WriteFileAsync(this.NOME_ARQUIVO,JSON.stringify(dados))
+  return true;
+  }
 
-  }
-  async listar(id){
+  async cadastrar(heroi){
     const dados=await this.obterDadosArquivo()
-    const dadosFiltrados=dados.filter(item=>id ?(item.id===id):true)
+    const id=heroi.if <= 2 ? heroi.id : Date.now()
+    const heroicomID={
+      id,
+      ...heroi
+    }
+    const dadosFinal=[
+      ...dados,
+      heroicomID
+    ]
+    const resultado=await this.escreverArquivos(dadosFinal)
+    return resultado
+  }
+  async listar(id) {
+    const dados = await this.obterDadosArquivo()
+    const dadosFiltrados = dados.filter(item => id ? (item.id === id) : true)
     return dadosFiltrados
   }
 }
 
-module.exports=new Database()
+module.exports = new Database()
