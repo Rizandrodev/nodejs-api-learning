@@ -17,28 +17,42 @@ class Database {
     return JSON.parse(arquivo, toString())
   }
   async escreverArquivos(dados) {
-  await WriteFileAsync(this.NOME_ARQUIVO,JSON.stringify(dados))
-  return true;
+    await WriteFileAsync(this.NOME_ARQUIVO, JSON.stringify(dados))
+    return true;
   }
 
-  async cadastrar(heroi){
-    const dados=await this.obterDadosArquivo()
-    const id=heroi.if <= 2 ? heroi.id : Date.now()
-    const heroicomID={
+  async cadastrar(heroi) {
+    const dados = await this.obterDadosArquivo()
+    const id = heroi.id <= 2 ? heroi.id : Date.now()
+    const heroicomID = {
       id,
       ...heroi
     }
-    const dadosFinal=[
+    const dadosFinal = [
       ...dados,
-      heroicomID
+      heroicomID 
     ]
-    const resultado=await this.escreverArquivos(dadosFinal)
+    const resultado = await this.escreverArquivos(dadosFinal)
     return resultado
   }
   async listar(id) {
     const dados = await this.obterDadosArquivo()
     const dadosFiltrados = dados.filter(item => id ? (item.id === id) : true)
     return dadosFiltrados
+  }
+
+  async remover(id) {
+    if (!id) {
+      return await this.escreverArquivos([])
+    }
+    const dados =await this.obterDadosArquivo()
+    console.log('id',id)
+    const indice = dados.findIndex(item => item.id === parseInt(id))
+    if(indice===-1){
+      throw Error('O usuario informado nao existe')
+    }
+    dados.splice(indice,1)
+    return await this.escreverArquivos(dados)
   }
 }
 
