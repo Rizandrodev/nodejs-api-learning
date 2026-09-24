@@ -1,6 +1,6 @@
 const { deepEqual } = require('assert')
 
-const database = require('../database.js')
+const database = require('./database.js')
 const DEFAULT_ITEM_CADASTRAR = {
   name: 'Flash',
   poder: 'speed',
