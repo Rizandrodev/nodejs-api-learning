@@ -1,8 +1,8 @@
-const { readFile, writeFile } = require('fs')
+const { readFile, writeFile} = require('fs')
 
 const { promisify } = require('util')
 
-const readFileAsync = promisify(readFile)
+  const readFileAsync = promisify(readFile)
 const WriteFileAsync = promisify(writeFile)
 /*
  Outra Forma de Obter dados Json
@@ -14,7 +14,7 @@ class Database {
   }
   async obterDadosArquivo() {
     const arquivo = await readFileAsync(this.NOME_ARQUIVO, 'utf-8')
-    return JSON.parse(arquivo, toString())
+    return JSON.parse(arquivo.toString())
   }
   async escreverArquivos(dados) {
     await WriteFileAsync(this.NOME_ARQUIVO, JSON.stringify(dados))
