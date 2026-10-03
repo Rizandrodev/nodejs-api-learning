@@ -16,6 +16,9 @@ class Icrud { //simulacao de Interface
   }
   delete(id) {
     throw new NotImplemntedException()
+  } 
+  isConnected() {
+    return this.database.isConnected()
   }
 }
 
