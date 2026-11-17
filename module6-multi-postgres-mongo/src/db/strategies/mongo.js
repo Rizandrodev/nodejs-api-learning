@@ -3,6 +3,20 @@ const mongoose = require('mongoose')
 
 const mongoUrl = process.env.mongo_url || 'mongodb+srv://carvalhorizandro_db_user:94EZZj7pVaAs8L27@cluster0.c27qxoo.mongodb.net/'
 
+// Cleanup existing model to avoid OverwriteModelError
+const cleanupMongooseModel = () => {
+  try {
+    if (mongoose.models['herois']) {
+      delete mongoose.models['herois']
+    }
+    if (mongoose.modelSchemas['herois']) {
+      delete mongoose.modelSchemas['herois']
+    }
+  } catch (e) {
+    // Ignore errors during cleanup
+  }
+}
+
 const STATUS = {
   0: 'Disconectado',
   1: 'Conectado',
@@ -16,7 +30,7 @@ class MongoDB extends Icrud {
     super()
     this._driver = null
     this._herois = null
-    const heroiSchema = new mongoose.Schema({
+    this.heroiSchema = new mongoose.Schema({
       nome: {
         type: String,
         required: true
@@ -32,14 +46,15 @@ class MongoDB extends Icrud {
     })
   }
   async isConnected() {
+    if (!this._driver) return 'Desconectado'
     const state = STATUS[this._driver.readyState]
-    if (state === 'conectado') return state
-    if (state === 'desconectado') {
+    if (state === 'Conectado') return state
+    if (state === 'Desconectado') {
       await new Promise(resolve => setTimeout(resolve, 1000))
       return this.isConnected()
     }
-    // para 'conectando' ou 'desconectando', tenta novamente após breve pausa
-    if (state === 'conectando' || state === 'desconectando') {
+    // para 'Conectando' ou 'Desconectando', tenta novamente após breve pausa
+    if (state === 'Conectando' || state === 'Desconectando') {
       await new Promise(resolve => setTimeout(resolve, 500))
       return this.isConnected()
     }
@@ -47,6 +62,7 @@ class MongoDB extends Icrud {
 
   }
   defineModel() {
+    cleanupMongooseModel()
     this._herois = mongoose.model('herois', this.heroiSchema)
   }
   async connect() {
@@ -63,6 +79,15 @@ class MongoDB extends Icrud {
   }
    create(item) {
     return this._herois.create(item)
+  }
+  read(query = {}) {
+    return this._herois.find({ ...query }).lean()
+  }
+  update(id, item) {
+    return this._herois.findOneAndUpdate({ _id: id }, { ...item, _id: id }, { new: true })
+  }
+  delete(id) {
+    return this._herois.deleteOne({ _id: id })
   }
 }
 

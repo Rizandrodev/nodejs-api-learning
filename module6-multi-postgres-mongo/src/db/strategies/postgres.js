@@ -11,6 +11,7 @@ class Postgres extends Icrud {
   }
 
   async isConnected() {
+    if (!this._driver) return false
     try {
       await this._driver.authenticate()
       return true
@@ -73,6 +74,10 @@ class Postgres extends Icrud {
     })
 
     return this._herois
+  }
+
+  async delete(id) {
+    return this._herois.destroy({ where: { id: id } })
   }
 }
 

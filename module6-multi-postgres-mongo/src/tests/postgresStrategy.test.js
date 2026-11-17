@@ -13,6 +13,10 @@ const MOCK_HEROI_ACTUALIZAR = {
   poder: 'Magic'
 
 }
+const MOCK_HEROI_EXCLUIR = {
+  nome: 'Herói para excluir',
+  poder: 'Poder Teste'
+}
 let idActualizar
 describe('Postgres Connection', function () {
   this.timeout(10000)
@@ -47,6 +51,20 @@ describe('Postgres Connection', function () {
     const [result] = await context.update(idActualizar, newItem)
     const [itemActualizado]=await context.read({id:itemAtualizar.id})
     assert.deepEqual(result, 1)
+  })
+
+  it('excluir', async () => {
+    const [itemRemovido] = await context.read({ nome: MOCK_HEROI_EXCLUIR.nome })
+    if (!itemRemovido) {
+      // Create the hero if it doesn't exist (in case before hook didn't create it)
+      await context.create(MOCK_HEROI_EXCLUIR)
+      const [newItem] = await context.read({ nome: MOCK_HEROI_EXCLUIR.nome })
+      const result = await context.delete(newItem.id)
+      assert.deepEqual(result, 1)
+    } else {
+      const result = await context.delete(itemRemovido.id)
+      assert.deepEqual(result, 1)
+    }
   })
 
 })
