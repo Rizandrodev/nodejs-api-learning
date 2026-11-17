@@ -20,6 +20,10 @@ class Postgres extends Icrud {
     }
   }
 
+  async update(id,item){
+    const r=await this._herois.update(item,{where:{id:id}})
+    return r
+  }
   async create(item) {
     const { dataValues } = await this._herois.create(item)
     return dataValues
